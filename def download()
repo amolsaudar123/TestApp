@@ -1,0 +1,31 @@
+See the following sanpshot of my code:
+def download() {
+        final session = sessionFactory.currentSession
+        def code = params.inspiration
+        final String query = "Query"
+        final sqlQuery = session.createSQLQuery(query)
+        final queryResults = sqlQuery.with {list()}
+        final result = queryResults.collect { resultRow -> resultRow }
+        def name=result[0][5]
+        Date date=new Date()
+        String fileName="doc.xls"
+        response.setContentType('application/vnd.ms-excel')
+        response.setHeader("Content-disposition", "attachment; filename=${fileName}")
+response.contentType=HSSFWorkbook.getTypeParameters()+';'+'charset='+HSSFWorkbook.getProperties()
+HSSFWorkbook workbook = new HSSFWorkbook()
+HSSFSheet sheet = workbook.createSheet("data")
+HSSFRow rowhead = sheet.createRow((short) 0)
+rowhead.createCell(0).setCellValue("Created On")
+rowhead.createCell(1).setCellValue("Email")
+rowhead.createCell(2).setCellValue("First Name")
+result.each {
+results ->
+HSSFRow dataRow = sheet.createRow(rowCount)
+results.each {
+ it ->dataRow.createCell(innerCellCount).setCellValue(it.toString())
+  } }
+        OutputStream outs=response.outputStream
+        workbook.write(outs)
+        outs.flush()
+        outs.close()
+        }
